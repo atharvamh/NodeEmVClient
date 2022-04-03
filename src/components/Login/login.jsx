@@ -1,7 +1,13 @@
 import React, {useState} from 'react'
-import FormComponent from '../Form/form'
+import FormComponent from '../Form/form';
+import { ToastContainer } from 'react-toastify';
+import { axiosConfig } from '../../config/axiosconfig.js'
+import { errorToast, successToast } from '../../config/toastConfig.js';
+import { useNavigate } from 'react-router-dom';
 
 const LoginComponent = () => {
+
+  const navigate = useNavigate();
 
   const fields = [
     {
@@ -42,14 +48,38 @@ const LoginComponent = () => {
     
     const payload = formFields.map(x => {
       return {
-        name : x.name,
-        value: x.value
+        [x.name] : x.value
       }
     })
+
+    const modfPayload = payload.reduce((result, current) => {
+      return Object.assign(result, current);
+    }, {})
+
+    axiosConfig.post("/login", modfPayload)
+    .then((response) => {
+      successToast(response.data);
+      setTimeout(() => {
+        navigate('/home');
+      }, 1000)
+    }).catch((err) => {
+      errorToast(err?.data);
+    })
+
+    setformFields(
+      formFields.map(x => {
+        return {
+          ...x,
+          value: '',
+          isRequired : true
+        }
+      })
+    )
   }
 
   return (
     <div className='d-flex align-items-center justify-content-center vh-100'>
+      <ToastContainer />
       <FormComponent title={title} fields={formFields} submitForm={validateAndSubmitForm} showLink={true}
         submitText={'Login'} showSubmit={true} updateFieldValue={updateFieldValue} linkTitle={linkTitle}
         linktext={'Sign up now'} link={'/'}

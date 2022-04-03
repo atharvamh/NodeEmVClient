@@ -14,14 +14,15 @@ const FormComponent = ({
 				<div className="form-group" key={idx}>
 					<label htmlFor={field?.name} className="label">
 						{field?.name}
+						{
+							field?.isRequired ?
+							<span className='text-danger helper-text'>*</span> : <></>
+						}
 					</label>
 					<input type={field?.type} className="form-control mt-1" 
                     id={field?.name} placeholder={field?.placeholder} value={field?.value} 
                     onChange={(event) => updateFieldValue(field, event)} required={field?.isRequired} />
-					{
-						field?.isRequired ?
-						<small className='text-danger helper-text'>Required *</small> : <></>
-					}
+					
 				</div>
 			))}
 			{showSubmit ? (
